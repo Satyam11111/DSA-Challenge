@@ -1,0 +1,39 @@
+class Solution{
+    static String printMinNumberForPattern(String S){
+        int num=1;
+        int i=0;
+        String s = new String("");        
+        char[] charArray = S.toCharArray();
+        Stack<Integer> stack = new Stack<Integer>();
+        stack.push(1);
+        
+        for(i=0;i<charArray.length;i++)
+        {
+            if(charArray[i]=='I')
+            {
+                    while (!stack.isEmpty()) {
+                        s+=stack.peek();
+                        stack.pop();
+                    }
+                    num++;
+                    stack.push(num);
+            }
+            else if(charArray[i]=='D')
+            {
+                num++;
+                stack.push(num);
+            }
+        }
+        if(stack.isEmpty())
+            return s;
+        else
+        {    
+            while (!stack.isEmpty()) {
+                s+=stack.peek();
+                stack.pop();
+            }
+        }
+       
+        return s;
+    }
+}
