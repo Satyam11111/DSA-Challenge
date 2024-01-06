@@ -1,0 +1,27 @@
+class Solution {
+    public int numberOfWays(int startPos, int endPos, int k) {
+        int [][]dp=new int[3002][1001];
+        for(int[] item: dp){
+            Arrays.fill(item,-1);
+        }
+        return util(startPos,endPos,startPos,k,dp);
+    }
+
+    int mod=1000000007;
+
+    int util(int s,int e,int curr,int k,int[][] dp){
+        if(k==0){
+            if(curr==e)return 1;
+            return 0;
+        }
+
+        if(dp[curr+1001][k]!=-1){
+            return dp[1001+curr][k];
+        }
+
+        int a=util(s,e,curr+1,k-1,dp)%mod;
+        int b=util(s,e,curr-1,k-1,dp)%mod;
+
+        return dp[curr+1001][k]=(a+b)%mod;
+    }
+}
