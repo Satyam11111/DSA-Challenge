@@ -1,0 +1,27 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+class Solution {
+    public int findTheWinner(int n, int k) {
+        Queue<Integer> q = new LinkedList<>();
+
+        // Step 1: Initialize the queue with friends from 1 to n
+        for (int i = 1; i <= n; i++) {
+            q.offer(i);
+        }
+
+        // Step 2-4: Eliminate friends until only one remains
+        while (q.size() > 1) {
+            for (int i = 0; i < k - 1; i++) {
+                // Move the friend immediately clockwise to the front
+                q.offer(q.poll());
+            }
+
+            // Remove the friend who loses the game
+            q.poll();
+        }
+
+        // Step 5: Return the last remaining friend (winner)
+        return q.poll();
+    }
+}
