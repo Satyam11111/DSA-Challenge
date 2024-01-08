@@ -1,0 +1,32 @@
+class Solution {
+    public int[][] imageSmoother(int[][] img) {
+       
+        int n = img.length;
+        int m = img[0].length;
+        int[][] ans = new int[n][m];
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                ans[i][j] = calculateSmoothedValue(img, i, j, n, m);
+            }
+        }
+        
+        return ans;
+    }
+    
+    private int calculateSmoothedValue(int[][] img, int row, int col, int n, int m) {
+        int sum = 0;
+        int count = 0;
+        
+        for (int i = row - 1; i <= row + 1; i++) {
+            for (int j = col - 1; j <= col + 1; j++) {
+                if (i >= 0 && i < n && j >= 0 && j < m) {
+                    sum += img[i][j];
+                    count++;
+                }
+            }
+        }
+        
+        return sum / count;
+    }
+}
