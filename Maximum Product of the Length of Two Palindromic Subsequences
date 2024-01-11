@@ -1,0 +1,122 @@
+class Solution {
+    public int maxProduct(String s) {
+        // 2^n total possible subsequences
+        // first calculate longest palindrome subseq for each possible subsequence
+        // then calculate product
+
+        int length = s.length();    // this is n
+        int count = (int)(Math.pow(2, length)); // this is 2^n
+
+        // the memoization table to store longest palindrome subseq, of all possible subseq
+        // for example, for s="leetcode", palSubSeq[00001011] stores the longest palindrome subseq of sequence "cde"
+        // because there are totally 2^n possible subsequences, the table size is 2^n (note n<=12 so this size <= 4096)
+        int[] palSubSeq = new int[count];
+        // base case: single characters
+        for (int bitIndex = 1; bitIndex < count; bitIndex *= 2) {
+            palSubSeq[bitIndex] = 1;
+        }
+
+        // use bitmask to do backtracking
+        boolean[] bitmask = new boolean[length];
+        for (int i = 0; i < length; i++) {
+            bitmask[i] = false;
+        }
+        // calculate the palSubSeq[] table
+        palSubSeqBacktrack(s, bitmask, 0, palSubSeq);
+
+        // get max product using palSubSeq[]
+        // for any subsequence mask, its flip is 2^n - 1 - mask
+        // for example, 00001011's flip is 11110100
+        int maxProduct = 0;
+        for (int i = 0; i < count / 2; i++) {
+            int product = palSubSeq[i] * palSubSeq[count - i - 1];
+            if (product > maxProduct) {
+                maxProduct = product;
+            }
+        }
+        return maxProduct;
+    }
+
+    // 2 stages of recursion calls
+    // stage 1. use backtracking just to get to all 2^n subsequences
+    private static void palSubSeqBacktrack(String s, boolean[] bitmask, int processingIndex, int[] palSubSeq) {
+        if (processingIndex < bitmask.length) {
+            // backtrack to bottom
+            bitmask[processingIndex] = true;
+            palSubSeqBacktrack(s, bitmask, processingIndex + 1, palSubSeq);
+            bitmask[processingIndex] = false;
+            palSubSeqBacktrack(s, bitmask, processingIndex + 1, palSubSeq);
+            return;
+        }
+
+        // at bottom, call stage 2
+        palSubSeqRecur(s, bitmask, palSubSeq);
+    }
+
+    // stage 2, for all subsequences, do recursion call + memoization. this could be changed to iterative
+    private static int palSubSeqRecur(String s, boolean[] bitmask, int[] palSubSeq) {
+        int bitIndex = bitmaskToIndex(bitmask);
+        if (bitIndex == 0) {
+            return 0;
+        }
+        if (palSubSeq[bitIndex] != 0) {
+            return palSubSeq[bitIndex];
+        }
+
+        // all-0's should be handled above
+        // single characters should have been filled in as base case
+        // starting here it should have at least 2 characters (2 one's in the bitmask)
+        int firstOneIndex;
+        for (firstOneIndex = 0; firstOneIndex < bitmask.length; firstOneIndex++) {
+            if (bitmask[firstOneIndex]) {
+                break;
+            }
+        }
+        int lastOneIndex;
+        for (lastOneIndex = bitmask.length - 1; lastOneIndex >= 0; lastOneIndex--) {
+            if (bitmask[lastOneIndex]) {
+                break;
+            }
+        }
+
+        int max = 0;
+        // maxPalSubseq(001110011) = max{
+        //   2 + maxPalSubseq(000110010) if s[2]==s[8],
+        //   maxPalSubseq(000110011),
+        //   maxPalSubseq(001110010),
+        // }
+        if (s.charAt(firstOneIndex) == s.charAt(lastOneIndex)) {
+            bitmask[firstOneIndex] = false;
+            bitmask[lastOneIndex] = false;
+            max = 2 + palSubSeqRecur(s, bitmask, palSubSeq);
+        }
+
+        bitmask[firstOneIndex] = false;
+        bitmask[lastOneIndex] = true;
+        int altMax1 = palSubSeqRecur(s, bitmask, palSubSeq);
+
+        bitmask[firstOneIndex] = true;
+        bitmask[lastOneIndex] = false;
+        int altMax2 = palSubSeqRecur(s, bitmask, palSubSeq);
+
+        bitmask[firstOneIndex] = true;
+        bitmask[lastOneIndex] = true;
+        if (altMax1 > max) {
+            max = altMax1;
+        }
+        if (altMax2 > max) {
+            max = altMax2;
+        }
+        palSubSeq[bitIndex] = max;
+        return max;
+    }
+
+    private static int bitmaskToIndex(boolean[] bitmask) {
+        int length = bitmask.length;
+        int number = 0;
+        for (int i = 0; i < length; i++) {
+            number = bitmask[i] ? (number * 2 + 1) : (number * 2);
+        }
+        return number;
+    }
+}
