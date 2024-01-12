@@ -1,0 +1,24 @@
+class Solution {
+    public void wiggleSort(int[] nums) {
+        //sort the array
+        Arrays.sort(nums);
+
+        //extra space
+        int j=1;
+        int arr[]=new int[nums.length];
+        for(int i=1;i<nums.length;i=i+2){
+            arr[i]=nums[nums.length-j];
+            j++;
+        }
+
+        for(int i=0;i<nums.length;i=i+2){
+            arr[i]=nums[nums.length-j];
+            j++;
+        }
+
+        //update origional array
+        for(int i=0;i<nums.length;i++){
+            nums[i]=arr[i];
+        }
+    }
+}
