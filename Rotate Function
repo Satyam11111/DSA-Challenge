@@ -1,0 +1,26 @@
+class Solution {
+   
+    public int maxRotateFunction(int[] nums) {
+        int n = nums.length;
+        int sum = 0;
+        int functionValue = 0;
+
+        // Calculate the initial sum and function value
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            functionValue += i * nums[i];
+        }
+
+        int max = functionValue;
+
+        // Iterate through rotations and update function value
+        for (int i = 1; i < n; i++) {
+            functionValue = functionValue + sum - n * nums[n - i];
+
+            // Update max if a higher value is found
+            max = Math.max(max, functionValue);
+        }
+
+        return max;
+    }
+}
