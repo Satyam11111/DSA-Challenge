@@ -1,0 +1,32 @@
+import java.util.*;
+
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        List<String> ans = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+
+        // Count the frequencies of words
+        for (int i = 0; i < words.length; i++) {
+            map.put(words[i], map.getOrDefault(words[i], 0) + 1);
+        }
+
+        // Sorting the entries based on frequencies and lexicographical order
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+        Collections.sort(entryList, (e1, e2) -> {
+            int compare = Integer.compare(e2.getValue(), e1.getValue()); 
+            // Sort by frequency in descending order
+            if (compare == 0) {
+                return e1.getKey().compareTo(e2.getKey()); 
+                // If frequencies are the same, sort lexicographically
+            }
+            return compare;
+        });
+
+        // Extracting the top k keys
+        for (int i = 0; i < Math.min(k, entryList.size()); i++) {
+            ans.add(entryList.get(i).getKey());
+        }
+
+        return ans;
+    }
+}
